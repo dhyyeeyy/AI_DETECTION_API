@@ -24,8 +24,6 @@ model_name = "facebook/wav2vec2-large-xlsr-53"
 wav2vec_model = Wav2Vec2Model.from_pretrained(model_name).to(DEVICE)
 wav2vec_model.eval()
 
-Wmodel = whisper.load_model("base")   # or "tiny"
-
 xgb_model = joblib.load("hybrid_model.pkl")
 scaler = joblib.load("feature_hybrid_scaler.pkl")
 
@@ -78,28 +76,8 @@ def analyze_audio(audio_base64: str):
 
     y, sr = librosa.load(audio_buffer, sr=16000, mono=True)
 
-    # --- Whisper language detection ---
-    audio_for_whisper = y.astype(np.float32)
-    result = Wmodel.transcribe(audio_for_whisper, fp16=False)
-
-    detected_language = result["language"]
-    transcript = result["text"]
-
-    lang_map = {
-        "en": "English",
-        "ta": "Tamil",
-        "hi": "Hindi",
-        "ml": "Malayalam",
-        "te": "Telugu"
-    }
-    mapped_language = lang_map.get(detected_language, "Unknown")
-
-    # --- Feature extraction ---
     features = extract_hybrid_features(y, sr)
     features = features.reshape(1, -1)
-
-    # (Optional) scale if you used a scaler in training
-    # features = scaler.transform(features)
 
     # --- XGBoost prediction ---
     y_prob = xgb_model.predict_proba(features)[0]
@@ -163,10 +141,10 @@ def detect_voice(data: dict, x_api_key: str = Header(None)):
             raise ValueError("Missing audioBase64")
 
         result = analyze_audio(audio_b64)
-
+        mapped_language = data.get("language")
         return {
             "status": "success",
-            "language": result["language"],
+            "language": mapped_language,
             "classification": result["classification"],
             "confidenceScore": result["confidenceScore"],
             "explanation": result["explanation"]

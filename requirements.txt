@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pyngrok
+nest-asyncio
+librosa
+soundfile
+numpy
+torch
+transformers
+scikit-learn
+xgboost
+openai-whisper
+shap
+joblib

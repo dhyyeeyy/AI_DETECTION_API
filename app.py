@@ -147,7 +147,8 @@ def analyze_audio(audio_base64: str):
         "prob_ai": prob_ai
     }
 
-# -----------------------------------------------------------@app.post("/api/voice-detection")
+# -----------------------------------------------------------
+@app.post("/api/voice-detection")
 def detect_voice(data: dict, x_api_key: str = Header(None)):
 
     if x_api_key != SECRET_KEY:

@@ -119,7 +119,6 @@ def analyze_audio(audio_base64: str):
     return {
         "classification": classification,
         "confidenceScore": confidence_score,
-        "language": mapped_language,
         "transcript": transcript,
         "explanation": explanation,
         "prob_ai": prob_ai

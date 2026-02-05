@@ -141,7 +141,7 @@ def detect_voice(data: dict, x_api_key: str = Header(None)):
             raise ValueError("Missing audioBase64")
 
         result = analyze_audio(audio_b64)
-        mapped_language = data["language"]
+        mapped_language = data.get("language", "Unknown")
 
         return {
             "status": "success",
